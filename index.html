@@ -74,8 +74,8 @@
     <div class="container d-flex justify-content-center mt-5">
       <form class="form-inline">
         <label class="sr-only" for="inlineFormInputName2">Name</label>
-        <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Friend's name ...">   
-        <button type="submit" class="btn btn-primary mb-2">Search</button>
+        <input type="text" class="form-control mb-2 mr-sm-2" id="search-friend" placeholder="Friend's name ...">   
+        <button type="submit" class="btn btn-primary mb-2 search-btn">Search</button>
       </form>
     </div>
 
@@ -89,48 +89,13 @@
   
     <!--額外資訊model-->
     <div class="modal" tabindex="-1" role="dialog" id="friend-modal">
-        <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="friend-name">Modal title</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            </div>
-            <div class="modal-body row">
-            <div class="col-sm-4 col-lg-3 friend-img mb-3"></div>
-            <div class="col-sm-8 col-lg-9">
-                <p class="friend-gender"></p>
-                <p class="friend-age"></p>
-                <p class="friend-birthday"></p>
-                <p class="friend-region"></p>
-                <p class="friend-email"></p>
-            </div>
-    
-            </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-        </div>
+      <!--利用JS載入額外資訊-->
     </div>
 
     <!--分頁器-->
     <nav aria-label="Page navigation example">
-      <ul class="pagination d-flex justify-content-center">
-        <li class="page-item">
-          <a class="page-link" href="#" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item">
-          <a class="page-link" href="#" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
+      <ul class="pagination d-flex justify-content-center m-3">
+        <!--JS根據資料多寡自動生成-->
       </ul>
     </nav>
 
