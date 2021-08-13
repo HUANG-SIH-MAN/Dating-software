@@ -1,0 +1,17 @@
+.carousel-word {
+  font-weight: 600;
+}
+
+.carousel-background {
+  background-color: rgba(240, 248, 255, 0.6);
+  color: black;
+}
+
+.fa-heart {
+  color: rgb(255, 20, 71);
+}
+
+.card {
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
