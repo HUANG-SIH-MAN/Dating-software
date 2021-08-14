@@ -9,7 +9,7 @@ const friendModal = document.querySelector("#friend-modal")
 const searchInput = document.querySelector("#search-friend")
 const searchButton = document.querySelector(".search-btn")
 
-//變數常數們
+//變數和常數們
 const friends = []  //存放axios取得的資料
 const searchResult = []
 const FRIEND_PER_PAGE = 12  //每一個分頁顯示幾個朋友
@@ -52,9 +52,20 @@ searchInput.addEventListener('input', function timelySearch (event) {
 
 //DOM事件 (點擊朋友清單主頁面)
 friendPanel.addEventListener('click', function showFriendIfo(event) {
-  if (event.target.matches(".btn-friend-more")) {  //點擊View顯示更多資訊
-    const friendID = Number(event.target.dataset.id)
+  const target = event.target
+  const friendID = Number(target.dataset.id)
+  if (target.matches(".btn-friend-more")) {  //點擊View顯示更多資訊
     showModel(friendID)
+  } else if (target.matches(".fa-heart")) {  //按到愛心
+    if (target.matches(".far")) {     //加入我的最愛
+      target.classList.add('fas')
+      target.classList.remove('far')
+      addFavoriteFridne(friendID)
+    } else if (target.matches(".fas")) {  //移除我的最愛
+      target.classList.add('far')
+      target.classList.remove('fas') 
+      removeFavoriteFridne(friendID)
+    }
   }
 })
 
@@ -79,8 +90,13 @@ pagination.addEventListener('click', function showFriendPage (event) {
 
 //將朋友圖像匯入網頁中的函式
 function renderFriends(data) {
+  let bestFriend = JSON.parse(localStorage.getItem('bestFriend')) || []
+  let style = 'far'
   let friendIfo = ""
   data.forEach((item) => {
+    if (bestFriend.some(friend => friend.id === item.id)) {
+      style = 'fas'
+    }
     friendIfo += `
     <div class="col-sm-6 col-lg-4 col-xl-3 mt-4">
       <div class="card">
@@ -89,7 +105,7 @@ function renderFriends(data) {
           <h5 class="name">${item.name}</h5>
           <hr/>
           <div class="d-flex justify-content-around mt-4">
-            <i class="far fa-heart fa-2x"></i>
+            <i class="${style} fa-heart fa-2x" data-id=${item.id}></i>
             <a href="#" class="btn btn-primary btn-friend-more" data-toggle="modal" data-target="#friend-modal" data-id=${item.id}>More</a>
           </div>
         </div>
@@ -153,6 +169,7 @@ function showModel(id) {
 
 //顯示分頁器
 function renderPagination (nowPage, state) {
+  //沒有資料，不顯示分頁器
   if (state === 'none') {
     pagination.innerHTML = ''
     return
@@ -254,4 +271,22 @@ function searchFriend (text) {
     `
     renderPagination(page, 'none')
   }
+}
+
+//將朋友加入我的最愛
+function addFavoriteFridne (id) {
+  let data = JSON.parse(localStorage.getItem('bestFriend')) || []
+  const index = friends.findIndex(item => item.id === id) 
+  if (!data.some(item => item.id === id)) {
+    data.push(friends[index]) 
+  }
+  localStorage.setItem('bestFriend',JSON.stringify(data))
+}
+
+//將朋友從我的最愛移除
+function removeFavoriteFridne (id) {
+  let data = JSON.parse(localStorage.getItem('bestFriend'))
+  const index = data.findIndex(item => item.id === id)
+  data.splice(index, 1)
+  localStorage.setItem('bestFriend',JSON.stringify(data))
 }

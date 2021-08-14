@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link href="https://cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
-    <title>My Friend</title>
+    <title>More Search</title>
 </head>
 <body>
     <!--導覽列-->
@@ -29,6 +29,59 @@
                 <a class="nav-link" href="moreSearch.html">More Search</a>
             </li>
         </div>
+    </nav>
+
+    <!--功能介紹-->
+    <div class="jumbotron jumbotron-fluid m-5">
+        <div class="container d-flex justify-content-center">
+            <div class="container">
+                <h1 class="display-4 mb-3">進階搜尋</h1>
+                <p class="lead">提供多樣化的選擇，幫助你找到理想的對象!!!</p>
+                <p class="lead">填寫下方表單，選擇你想要的條件</p>
+            </div>
+            <div>
+                <img src="http://buzzlife.com.tw/photo/2/1560752990_2d2c0426_0.jpg" class="img-thumbnail" alt="圖片掛了我也沒辦法，請無視它，假裝有圖片在那裡">
+            </div>
+        </div>   
+    </div>
+
+    <!--搜尋表單-->
+    <div class="container m-5">
+        <form>
+            <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            </div>
+            <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1">
+            </div>
+            <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>        
+    </div>
+    
+    <!--朋友介紹的panel-->
+    <div class="container d-flex justify-content-center">
+        <div class="container friends_panel row mb-4">
+        <!--單一人介紹-->
+        </div>
+    </div>
+  
+    <!--額外資訊model-->
+    <div class="modal" tabindex="-1" role="dialog" id="friend-modal">
+      <!--利用JS載入額外資訊-->
+    </div>
+
+    <!--分頁器-->
+    <nav aria-label="Page navigation example">
+      <ul class="pagination d-flex justify-content-center m-3">
+        <!--JS根據資料多寡自動生成-->
+      </ul>
     </nav>
 
     <!--外部擴充套件-->
