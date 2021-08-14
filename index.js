@@ -265,8 +265,17 @@ function searchFriend (text) {
         <h1 class="display-4">找不到名字是${text}的朋友</h1>
         <p class="lead">找不到理想的朋友嗎? 別灰心再嘗試別的關鍵字吧!!</p>
         <hr class="my-4">
-        <p>點擊下方按鈕可以返回朋友列表</p>
-        <a class="btn btn-primary btn-lg" href="index.html" role="button">Home</a>
+        <div class="container row">
+            <div class="col-sm-6">
+              <h5 class="mb-3">返回朋友列表</h5>
+              <a class="btn btn-primary btn-lg" href="index.html" role="button">Home</a>
+            </div>
+            <div class="col-sm-6 border-left border-secondary">
+              <h5 class="mb-3">進階搜尋</h5>
+              <a class="btn btn-primary btn-lg" href="moreSearch.html" role="button">More Search</a>
+            </div>
+        </div>
+        
       </div>
     `
     renderPagination(page, 'none')
