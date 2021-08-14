@@ -119,19 +119,37 @@ function chooseFriend (data) {
     const chooseRegion = data.filter(item => item.name === 'Region')
     const chooseConstellations = data.filter(item => item.name === 'Constellations')
 
-    //確認年紀範圍
-    // age.filter(item => item.value ===)
-
     //每個朋友各自比對資料
     friends.forEach(friend => {
         //要符合所有條件
+        const ageLimit = confirmAge(friend, chooseAge) 
         const limit = chooseGender.some(item => item.value === friend.gender) && 
-                      chooseRegion.some(item => item.value.includes(friend.region))
+                      chooseRegion.some(item => item.value.includes(friend.region)) 
+                      //
+                      
+        console.log(ageLimit)
         if (limit) {
             searchResult.push(friend)
         }
     })
     return searchResult
+}
+
+//確認年紀範圍
+function confirmAge (friendIfo, chooseAge) {
+    const friendAge = Number(friendIfo.age)
+    chooseAge.forEach(item => {
+        const age = item.value.split('-')
+        const start = Number(age[0])
+        const end = Number(age[1])
+       // console.log((friendAge >= start) && (friendAge <= end))
+        if ((friendAge >= start) && (friendAge <= end)) {
+            return true
+        } else {
+            return false
+        }
+    })
+
 }
 
 //生日轉換星座
