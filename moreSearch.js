@@ -5,7 +5,7 @@ const INDEX_URL = BASE_URL + "/api/v1/users";
 //資料相關變數
 const region = ["AU", "BR", "CA", "CH", "DE", "DK", "ES", "FI", "FR", "GB", "IE", "IR", "NL", "NO", "NZ", "TR", "US"]
 const constellations = [
-    'Aries', 
+    'Aries',
     'Taurus', 
     'Gemini', 
     'Cancer', 
@@ -18,24 +18,17 @@ const constellations = [
     'Aquarius', 
     'Pisces'
 ]
-// const age = [
-//     {value: 0, start: 0, end: 20}, 
-//     {value: 21, start: 21, end: 30}, 
-//     {value: 31, start: 31, end: 40}, 
-//     {value: 41, start: 41, end: 50}, 
-//     {value: 51, start: 51, end: 60}, 
-//     {value: 61, start: 61, end: 100},
-//     {value: 100, start: 0, end: 100}
-// ]
 
 const friends = []  //存放axios取得的資料
-const FRIEND_PER_PAGE = 12  //每一個分頁顯示幾個朋友
+const FRIEND_PER_PAGE = 12  //每一個分頁顯示幾個朋友  
+const searchResult = []  //選出符合條件放入 searchResult 陣列中
 let page = 1
 let allPage 
 
+
 //DOM節點(版面繪製相關)
-const regionSelect = document.querySelector('.region-select')
-const constellationsSelect = document.querySelector('.constellations-select')
+const regionSelect = document.querySelectorAll('.region-select')
+const constellationsSelect = document.querySelectorAll('.constellations-select')
 const friendPanel = document.querySelector(".friends_panel")
 const pagination = document.querySelector(".pagination")
 const friendModal = document.querySelector("#friend-modal")
@@ -47,9 +40,9 @@ const ageUnder20 = document.querySelector('#age-20')
 const ageOver21 = document.querySelector('#age-21-30')
 
 //生成選項(國籍)
-renderSelect (region, regionSelect, 'region')
+renderSelect (region, regionSelect)
 //生成選項(星座)
-renderSelect (constellations, constellationsSelect, 'constellations')
+renderSelect (constellations, constellationsSelect)
 
 //連線取得資料
 axios
@@ -64,9 +57,27 @@ axios
 //DOM事件(按按鈕送出表單搜尋)  //使用jQuery
 $("form").submit(function(event) {
     event.preventDefault()
-    const limitData = $(this).serializeArray()
-    renderFriends(chooseFriend(limitData))
-    
+    //復原資料原始設定
+    page = 1
+    searchResult.splice(0, searchResult.length)
+
+    const limitData = $(this).serializeArray()  //表單送出後得到的條件
+    chooseFriend(limitData)  //利用條件進行篩選，會將結果存放在 searchResult
+    renderFriends(getFriendsByPage(page))  //顯示搜尋結果
+    renderPagination(page)  //顯示分頁器
+
+    //如果條件太嚴苛，沒有人符合
+    if (searchResult.length === 0) {
+        friendPanel.innerHTML = `
+          <div class="jumbotron jumbotron-fluid container-fluid">
+              <div class="container">
+              <h1 class="display-4 m-3">搜尋不到符合條件的人</h1>
+              <p class="lead m-3">不要那麼挑剔，放寬條件再試一次吧!!!</p>
+              </div>
+          </div> 
+        `
+    }
+
     return false;
 })
 
@@ -89,72 +100,118 @@ friendPanel.addEventListener('click', function showFriendIfo(event) {
     }
 })
 
+//DOM事件(點擊頁數顯示對應畫面)
+pagination.addEventListener('click', function showFriendPage (event) {
+    event.preventDefault()
+    if ((event.target.tagName !== 'A') || (event.target.dataset.page === 'dot')) return  //沒按到分頁器內容，跳出函式
+    if (event.target.matches('#previous-page')) {  //按到上一頁
+      if (page === 1) return  //無法在上一頁，跳出函式
+      page--
+    } else if (event.target.matches('#next-page')) {   //按到下一頁
+      if (page === allPage) return //無法在下一頁，跳出函式
+      page++
+    } else {
+      page = Number(event.target.dataset.page)    ////按到頁數
+    }
+    renderFriends(getFriendsByPage(page))
+    renderPagination(page)
+})
+
 ///函式們///////////////////////////////////////////////////////////////////////////////////////////////////////
 //生成選項函式
-function renderSelect (data, panel, name) {
-    let all = ''
-    data.forEach(item => {
-        all += item
-    })
-    panel.innerHTML +=`
-        <option selected value='${all}'>Choose ${name}</option>
-    `
+function renderSelect (data, panels) {
+  panels.forEach(panel => {
     data.forEach(item => {
         panel.innerHTML +=`
             <option value='${item}'>${item}</option>
         `
     })
+  })  
 }
 
 //利用條件篩選朋友
 function chooseFriend (data) {
-    //選出符合條件放入 searchResult 陣列中
-    const searchResult = [] 
-
     //搜尋條件變數 (如果使用者沒有輸入，就當作沒這個條件)
+    //年齡
     let chooseAge = data.filter(item => item.name === 'Age')  
     chooseAge = chooseAge.length ? chooseAge : [{name: 'Age', value: '0-100'}]
+    //性別
     let chooseGender = data.filter(item => item.name === 'Gender') 
     chooseGender = chooseGender.length ? chooseGender : [{name: 'Gender', value: 'male'}, {name: 'Gender', value: 'female'}]
-    const chooseRegion = data.filter(item => item.name === 'Region')
-    const chooseConstellations = data.filter(item => item.name === 'Constellations')
+    //地區
+    let chooseRegion = data.filter(item => item.name === 'Region' && item.value !== '')
+    chooseRegion = chooseRegion.length ? chooseRegion : [{name: 'Region', value: 'AUBRCACHDEDKESFIFRGBIEIRNLNONZTRUS'}]
+    //星座
+    let chooseConstellations = data.filter(item => item.name === 'Constellations' && item.value !== '')
+    chooseConstellations = chooseConstellations.length ? chooseConstellations : [{name: 'Constellations', value: 'AriesTaurusGeminCancerLeoVirgoLibraScorpioSagittariusCapricornAquariusPisces'}]
 
     //每個朋友各自比對資料
     friends.forEach(friend => {
-        //要符合所有條件
-        const ageLimit = confirmAge(friend, chooseAge) 
+        //要符合所有條件 (性別和地區)
         const limit = chooseGender.some(item => item.value === friend.gender) && 
-                      chooseRegion.some(item => item.value.includes(friend.region)) 
-                      //
-                      
-        console.log(ageLimit)
+                      chooseRegion.some(item => item.value.includes(friend.region))        
         if (limit) {
             searchResult.push(friend)
         }
     })
-    return searchResult
+    //比對年紀
+    for (let i= searchResult.length - 1 ; i >= 0 ; i--) {
+        const limit = !confirmAge(searchResult[i], chooseAge)            
+        if (limit) {
+            searchResult.splice(i, 1)
+        }
+    }
+    //比對星座
+    for (let i= searchResult.length - 1 ; i >= 0 ; i--) {
+      const friendZodiac = getconstellations(searchResult[i].birthday)
+      const limit = !chooseConstellations.some(item => item.value === friendZodiac)
+      if (limit) {
+        searchResult.splice(i, 1)
+      }
+    }
 }
 
 //確認年紀範圍
 function confirmAge (friendIfo, chooseAge) {
     const friendAge = Number(friendIfo.age)
-    chooseAge.forEach(item => {
+    for (let item of chooseAge) {
         const age = item.value.split('-')
-        const start = Number(age[0])
-        const end = Number(age[1])
-       // console.log((friendAge >= start) && (friendAge <= end))
-        if ((friendAge >= start) && (friendAge <= end)) {
+        if ((friendAge >= Number(age[0])) && (friendAge <= Number(age[1]))) {
             return true
-        } else {
-            return false
         }
-    })
-
+    }
+    return false
 }
 
 //生日轉換星座
 function getconstellations (birthday) {
-
+    let day = birthday.split('-')
+    day = Number(day[1] + day[2].padStart(2, '0'))
+    if (day >= 120 && day <=218) {
+        return 'Aquarius'
+    } else if (day >= 219 && day <= 320) {
+        return 'Pisces'
+    } else if (day >= 321 && day <= 419) {
+        return 'Aries'
+    } else if (day >= 420 && day <= 520) {
+        return 'Taurus'
+    } else if (day >= 521 && day <= 621) {
+        return 'Gemini'
+    } else if (day >= 622 && day <= 722) {
+        return 'Cancer'
+    } else if (day >= 723 && day <= 822) {
+        return 'Leo'
+    } else if (day >= 823 && day <= 922) {
+        return 'Virgo'
+    } else if (day >= 923 && day <= 1023) {
+        return 'Libra'
+    } else if (day >= 1024 && day <= 1122) {
+        return 'Scorpio'
+    } else if (day >= 1123 && day <= 1221) {
+        return 'Sagittarius'
+    } else if (day >= 1222 || day <= 119) {
+        return 'Capricorn'
+    }
 }
 
 //將朋友圖像匯入網頁中的函式
@@ -165,6 +222,8 @@ function renderFriends(data) {
     data.forEach((item) => {
       if (bestFriend.some(friend => friend.id === item.id)) {
         style = 'fas'
+      } else {
+        style = 'far'
       }
       friendIfo += `
       <div class="col-sm-6 col-lg-4 col-xl-3 mt-4">
@@ -237,13 +296,13 @@ function showModel(id) {
 }
   
   //顯示分頁器
-function renderPagination (nowPage, state) {
+function renderPagination (nowPage) {
     //沒有資料，不顯示分頁器
     if (searchResult.length === 0) {
       pagination.innerHTML = ''
       return
     }
-    const amount = searchResult.length ? searchResult.length : friends.length
+    const amount = searchResult.length
     allPage = Math.ceil(amount / FRIEND_PER_PAGE)  //計算需要幾頁
     let paginationHTML = ''  //分頁器網頁內容
     //前一頁
@@ -307,7 +366,7 @@ function renderPagination (nowPage, state) {
   
   //將朋友資訊分頁顯示
 function getFriendsByPage (page) {
-    let data = searchResult.length ? searchResult : friends
+    let data = searchResult 
     const index = (page - 1) * FRIEND_PER_PAGE
     return data.slice(index, index + FRIEND_PER_PAGE)
 }

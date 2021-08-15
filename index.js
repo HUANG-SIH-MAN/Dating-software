@@ -96,6 +96,8 @@ function renderFriends(data) {
   data.forEach((item) => {
     if (bestFriend.some(friend => friend.id === item.id)) {
       style = 'fas'
+    } else {
+      style = 'far'
     }
     friendIfo += `
     <div class="col-sm-6 col-lg-4 col-xl-3 mt-4">

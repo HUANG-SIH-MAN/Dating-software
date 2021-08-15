@@ -19,7 +19,7 @@ friendPanel.addEventListener('click', function showFriendIfo(event) {
     const friendID = Number(target.dataset.id)
     if (target.matches(".btn-friend-more")) {  //點擊View顯示更多資訊
       showModel(friendID)
-    } else if (target.matches(".delete")) {  //按到刪除
+    } else if (target.matches(".delete") || target.matches(".fa-heart-broken")) {  //按到刪除
         swal({
             title: "確定刪除該好友嗎?",
             text: "刪除好友後，將無法復原!!",
@@ -88,7 +88,7 @@ function renderFriends(data) {
             <hr/>
             <div class="d-flex justify-content-around mt-4">
               <a href="#" class="btn btn-primary btn-friend-more" data-toggle="modal" data-target="#friend-modal" data-id=${item.id}>More</a>
-              <button type="button" class="btn btn-danger delete" data-id=${item.id}>X</button>
+              <button type="button" class="btn btn-danger delete" data-id=${item.id}><i class="fas fa-heart-broken" data-id=${item.id}></i></button>
               </div>
           </div>
         </div>
