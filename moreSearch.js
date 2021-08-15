@@ -68,16 +68,8 @@ $("form").submit(function(event) {
 
     //如果條件太嚴苛，沒有人符合
     if (searchResult.length === 0) {
-        friendPanel.innerHTML = `
-          <div class="jumbotron jumbotron-fluid container-fluid">
-              <div class="container">
-              <h1 class="display-4 m-3">搜尋不到符合條件的人</h1>
-              <p class="lead m-3">不要那麼挑剔，放寬條件再試一次吧!!!</p>
-              </div>
-          </div> 
-        `
+      renderFail(friendPanel)  
     }
-
     return false;
 })
 
@@ -158,7 +150,7 @@ function chooseFriend (data) {
     for (let i= searchResult.length - 1 ; i >= 0 ; i--) {
         const limit = !confirmAge(searchResult[i], chooseAge)            
         if (limit) {
-            searchResult.splice(i, 1)
+          searchResult.splice(i, 1)
         }
     }
     //比對星座
@@ -244,7 +236,7 @@ function renderFriends(data) {
     friendPanel.innerHTML = friendIfo
 }
   
-  //顯示更多資訊的函式
+//顯示更多資訊的函式
 function showModel(id) {
     const index = friends.findIndex(item => item.id === id)
     const targetFriend = friends[index]
@@ -295,7 +287,7 @@ function showModel(id) {
   
 }
   
-  //顯示分頁器
+//顯示分頁器
 function renderPagination (nowPage) {
     //沒有資料，不顯示分頁器
     if (searchResult.length === 0) {
@@ -364,7 +356,7 @@ function renderPagination (nowPage) {
     pagination.innerHTML = paginationHTML
 } 
   
-  //將朋友資訊分頁顯示
+//將朋友資訊分頁顯示
 function getFriendsByPage (page) {
     let data = searchResult 
     const index = (page - 1) * FRIEND_PER_PAGE
@@ -388,4 +380,26 @@ function removeFavoriteFridne (id) {
     data.splice(index, 1)
     localStorage.setItem('bestFriend',JSON.stringify(data))
 }
-  
+
+//繪出搜尋失敗畫面
+function renderFail (panel) {
+  panel.innerHTML = `
+          <div class="jumbotron jumbotron-fluid container-fluid">
+              <div class="container mb-3">
+                <h1 class="display-4 m-3">搜尋不到符合條件的人</h1>
+                <p class="lead m-3">不要那麼挑剔，放寬條件再試一次吧!!!</p>
+              </div>
+              <hr class="m-4"/>
+              <div class="container row">
+                <div class="container col-sm-5 ml-3">
+                  <h4 class="mb-3">試了那麼多條件還是找不到理想的人</h4>
+                  <p class="lead">嘗試隨機配對，直接交給命運來決定吧!!!</p>
+                  <a class="btn btn-primary btn-lg" href="randomPairing.html" role="button">Random Pairing</a>
+                </div>
+                <div class="container col-sm-6">
+                  <img src="dice_PNG150.png" class="img-thumbnail" alt="圖片掛了我也沒辦法，請無視它，假裝有圖片在那裡">
+                </div>
+              </div>
+          </div> 
+        `
+}

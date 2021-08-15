@@ -68,8 +68,16 @@ function renderFriends(data) {
                 <h1 class="display-4 mb-3">沒有最要好的朋友嗎?</h1>
                 <p class="lead">別擔心，趕快到我們的朋友清單，去尋找新朋友吧 !!</p>
                 <hr class="my-4">
-                <p>點擊下方按鈕可以返回朋友列表</p>
-                <a class="btn btn-primary btn-lg" href="index.html" role="button">Home</a>
+                <div class="container row">
+                    <div class="col-sm-6">
+                      <h5 class="mb-3">返回朋友列表，尋找新朋友</h5>
+                      <a class="btn btn-primary btn-lg" href="index.html" role="button">Home</a>
+                    </div>
+                    <div class="col-sm-6 border-left border-secondary">
+                      <h5 class="mb-3">有選擇障礙不知道該選誰，試試我們的新功能</h5>
+                      <a class="btn btn-primary btn-lg" href="randomPairing.html" role="button">Random Pairing</a>
+                    </div>
+                </div>
             </div>
         `
         friendPanel.innerHTML = friendIfo
