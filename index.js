@@ -31,6 +31,7 @@ axios
 //DOM事件 (一般搜尋)
 searchButton.addEventListener('click', function search (event) {
   event.preventDefault()
+  searchResult.splice(0, searchResult.length)  //將之前儲存的搜尋結果清空
   const text = searchInput.value.trim().toLowerCase()
   searchFriend(text)
   if (searchResult.length === 0) {

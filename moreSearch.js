@@ -136,30 +136,25 @@ function chooseFriend (data) {
     //星座
     let chooseConstellations = data.filter(item => item.name === 'Constellations' && item.value !== '')
     chooseConstellations = chooseConstellations.length ? chooseConstellations : [{name: 'Constellations', value: 'AriesTaurusGeminCancerLeoVirgoLibraScorpioSagittariusCapricornAquariusPisces'}]
-
+ 
     //每個朋友各自比對資料
     friends.forEach(friend => {
         //要符合所有條件 (性別和地區)
         const limit = chooseGender.some(item => item.value === friend.gender) && 
-                      chooseRegion.some(item => item.value.includes(friend.region))        
+                      chooseRegion.some(item => item.value.includes(friend.region))     
         if (limit) {
-            searchResult.push(friend)
+          searchResult.push(friend)
         }
     })
-    //比對年紀
+
+    // //比對年紀
     for (let i= searchResult.length - 1 ; i >= 0 ; i--) {
-        const limit = !confirmAge(searchResult[i], chooseAge)            
+        const friendZodiac = getconstellations(searchResult[i].birthday)      
+        const limit = !confirmAge(searchResult[i], chooseAge) || !chooseConstellations.some(item => item.value.includes(friendZodiac)) 
         if (limit) {
           searchResult.splice(i, 1)
-        }
-    }
-    //比對星座
-    for (let i= searchResult.length - 1 ; i >= 0 ; i--) {
-      const friendZodiac = getconstellations(searchResult[i].birthday)
-      const limit = !chooseConstellations.some(item => item.value === friendZodiac)
-      if (limit) {
-        searchResult.splice(i, 1)
-      }
+          console.log(searchResult, `這是第${i}次`)
+        } 
     }
 }
 
