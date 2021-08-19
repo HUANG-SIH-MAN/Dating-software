@@ -21,7 +21,7 @@ const constellations = [
 
 const friends = []  //存放axios取得的資料
 const FRIEND_PER_PAGE = 12  //每一個分頁顯示幾個朋友  
-const searchResult = []  //選出符合條件放入 searchResult 陣列中
+let searchResult = []  //選出符合條件放入 searchResult 陣列中
 let page = 1
 let allPage 
 
@@ -83,11 +83,11 @@ friendPanel.addEventListener('click', function showFriendIfo(event) {
       if (target.matches(".far")) {     //加入我的最愛
         target.classList.add('fas')
         target.classList.remove('far')
-        addFavoriteFridne(friendID)
+        addFavoriteFridned(friendID)
       } else if (target.matches(".fas")) {  //移除我的最愛
         target.classList.add('far')
         target.classList.remove('fas') 
-        removeFavoriteFridne(friendID)
+        removeFavoriteFridned(friendID)
       }
     }
 })
@@ -103,7 +103,7 @@ pagination.addEventListener('click', function showFriendPage (event) {
       if (page === allPage) return //無法在下一頁，跳出函式
       page++
     } else {
-      page = Number(event.target.dataset.page)    ////按到頁數
+      page = Number(event.target.dataset.page)    //按到頁數
     }
     renderFriends(getFriendsByPage(page))
     renderPagination(page)
@@ -124,45 +124,41 @@ function renderSelect (data, panels) {
 //利用條件篩選朋友
 function chooseFriend (data) {
     //搜尋條件變數 (如果使用者沒有輸入，就當作沒這個條件)
-    //年齡
-    let chooseAge = data.filter(item => item.name === 'Age')  
-    chooseAge = chooseAge.length ? chooseAge : [{name: 'Age', value: '0-100'}]
-    //性別
-    let chooseGender = data.filter(item => item.name === 'Gender') 
-    chooseGender = chooseGender.length ? chooseGender : [{name: 'Gender', value: 'male'}, {name: 'Gender', value: 'female'}]
-    //地區
-    let chooseRegion = data.filter(item => item.name === 'Region' && item.value !== '')
-    chooseRegion = chooseRegion.length ? chooseRegion : [{name: 'Region', value: 'AUBRCACHDEDKESFIFRGBIEIRNLNONZTRUS'}]
-    //星座
-    let chooseConstellations = data.filter(item => item.name === 'Constellations' && item.value !== '')
-    chooseConstellations = chooseConstellations.length ? chooseConstellations : [{name: 'Constellations', value: 'AriesTaurusGeminCancerLeoVirgoLibraScorpioSagittariusCapricornAquariusPisces'}]
- 
-    //每個朋友各自比對資料
-    friends.forEach(friend => {
-        //要符合所有條件 (性別和地區)
-        const limit = chooseGender.some(item => item.value === friend.gender) && 
-                      chooseRegion.some(item => item.value.includes(friend.region))     
-        if (limit) {
-          searchResult.push(friend)
-        }
-    })
+    const chooseAge = data.filter(item => item.name === 'Age').map(item => item.value) 
+    const chooseGender = data.filter(item => item.name === 'Gender').map(item => item.value)
+    const chooseRegion = data.filter(item => item.name === 'Region' && item.value !== '').map(item => item.value)
+    const chooseConstellations = data.filter(item => item.name === 'Constellations' && item.value !== '').map(item => item.value)
 
-    // //比對年紀
-    for (let i= searchResult.length - 1 ; i >= 0 ; i--) {
-        const friendZodiac = getconstellations(searchResult[i].birthday)      
-        const limit = !confirmAge(searchResult[i], chooseAge) || !chooseConstellations.some(item => item.value.includes(friendZodiac)) 
-        if (limit) {
-          searchResult.splice(i, 1)
-          console.log(searchResult, `這是第${i}次`)
-        } 
-    }
+    //每個朋友各自比對資料
+    searchResult = friends
+    .filter(friend => { 
+      //篩選年紀
+       if (chooseAge.length === 0) return true
+       return confirmAge(friend, chooseAge)
+    })
+    .filter(friend => {
+      //篩選性別
+      if(chooseGender.length === 0) return true
+      return chooseGender.some(item => item === friend.gender)
+    })
+    .filter(friend => {
+      //篩選區域
+      if(chooseRegion.length === 0) return true
+      return chooseRegion.some(item => item.includes(friend.region))
+    })
+    .filter(friend => {
+      //篩選星座
+      const friendZodiac = getContellations (friend.birthday)
+      if (chooseConstellations.length === 0) return true
+      return chooseConstellations.some(item => item.includes(friendZodiac))
+    })
 }
 
 //確認年紀範圍
 function confirmAge (friendIfo, chooseAge) {
     const friendAge = Number(friendIfo.age)
     for (let item of chooseAge) {
-        const age = item.value.split('-')
+        const age = item.split('-')
         if ((friendAge >= Number(age[0])) && (friendAge <= Number(age[1]))) {
             return true
         }
@@ -171,47 +167,30 @@ function confirmAge (friendIfo, chooseAge) {
 }
 
 //生日轉換星座
-function getconstellations (birthday) {
+function getContellations (birthday) {
     let day = birthday.split('-')
     day = Number(day[1] + day[2].padStart(2, '0'))
-    if (day >= 120 && day <=218) {
-        return 'Aquarius'
-    } else if (day >= 219 && day <= 320) {
-        return 'Pisces'
-    } else if (day >= 321 && day <= 419) {
-        return 'Aries'
-    } else if (day >= 420 && day <= 520) {
-        return 'Taurus'
-    } else if (day >= 521 && day <= 621) {
-        return 'Gemini'
-    } else if (day >= 622 && day <= 722) {
-        return 'Cancer'
-    } else if (day >= 723 && day <= 822) {
-        return 'Leo'
-    } else if (day >= 823 && day <= 922) {
-        return 'Virgo'
-    } else if (day >= 923 && day <= 1023) {
-        return 'Libra'
-    } else if (day >= 1024 && day <= 1122) {
-        return 'Scorpio'
-    } else if (day >= 1123 && day <= 1221) {
-        return 'Sagittarius'
-    } else if (day >= 1222 || day <= 119) {
-        return 'Capricorn'
-    }
+    if (day >= 1222 || day <= 119) return 'Capricorn'
+    if (day <= 218) return 'Aquarius'
+    if (day <= 320) return 'Pisces'
+    if (day <= 419) return 'Aries' 
+    if (day <= 520) return 'Taurus'   
+    if (day <= 621) return 'Gemini'
+    if (day <= 722) return 'Cancer'   
+    if (day <= 822) return 'Leo'
+    if (day <= 922) return 'Virgo'
+    if (day <= 1023) return 'Libra'
+    if (day <= 1122) return 'Scorpio'
+    return 'Sagittarius'
 }
 
 //將朋友圖像匯入網頁中的函式
 function renderFriends(data) {
     let bestFriend = JSON.parse(localStorage.getItem('bestFriend')) || []
-    let style = 'far'
+    let style
     let friendIfo = ""
     data.forEach((item) => {
-      if (bestFriend.some(friend => friend.id === item.id)) {
-        style = 'fas'
-      } else {
-        style = 'far'
-      }
+      bestFriend.some(friend => friend.id === item.id) ? style = 'fas' : style = 'far'
       friendIfo += `
       <div class="col-sm-6 col-lg-4 col-xl-3 mt-4">
         <div class="card">
@@ -359,7 +338,7 @@ function getFriendsByPage (page) {
 }
 
 //將朋友加入我的最愛
-function addFavoriteFridne (id) {
+function addFavoriteFridned (id) {
     let data = JSON.parse(localStorage.getItem('bestFriend')) || []
     const index = friends.findIndex(item => item.id === id) 
     if (!data.some(item => item.id === id)) {
@@ -369,7 +348,7 @@ function addFavoriteFridne (id) {
 }
   
 //將朋友從我的最愛移除
-function removeFavoriteFridne (id) {
+function removeFavoriteFridned (id) {
     let data = JSON.parse(localStorage.getItem('bestFriend'))
     const index = data.findIndex(item => item.id === id)
     data.splice(index, 1)

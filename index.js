@@ -95,11 +95,7 @@ function renderFriends(data) {
   let style = 'far'
   let friendIfo = ""
   data.forEach((item) => {
-    if (bestFriend.some(friend => friend.id === item.id)) {
-      style = 'fas'
-    } else {
-      style = 'far'
-    }
+    bestFriend.some(friend => friend.id === item.id) ? style = 'fas' : style = 'far'
     friendIfo += `
     <div class="col-sm-6 col-lg-4 col-xl-3 mt-4">
       <div class="card">
@@ -154,11 +150,7 @@ function showModel(id) {
   const modalHeader = document.querySelector('.modal-header')
   const modalFooter = document.querySelector('.modal-footer')
 
-  if (targetFriend.gender === "male") {
-    modalHeader.style.backgroundColor = "#009bdf"
-  } else {
-    modalHeader.style.backgroundColor = "#e06e98"
-  }
+  targetFriend.gender === "male" ? modalHeader.style.backgroundColor = "#009bdf" : modalHeader.style.backgroundColor = "#e06e98"
 
   if (targetFriend.age <= 30) {
     modalFooter.style.backgroundColor = "#ffa600"
